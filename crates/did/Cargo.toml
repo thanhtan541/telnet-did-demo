@@ -1,5 +1,5 @@
 [package]
-name = "openmls-group"
+name = "did"
 version = "0.0.0"
 edition = "2021"
 
@@ -9,10 +9,5 @@ tokio-util = { version = "0.7.12", features = ["codec"] }
 bytes = "1.0.1"
 rand = { version = "0.8" }
 futures = "0.3.12"
-openmls = { version = "0.6.0", features = ["test-utils"] }
-openmls_basic_credential = "0.3.0"
-openmls_traits = "0.3.0"
-openmls_rust_crypto = "0.3.0"
-openmls_memory_storage = { version = "0.3.0" }
 uuid = { version = "1.10.0", features = ["v4", "serde"] }
 thiserror = { version = "1" }

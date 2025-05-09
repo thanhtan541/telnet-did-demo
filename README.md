@@ -1,6 +1,6 @@
-# uney-chat-mls-group
+# telnet-openmls-demo
 
-The Group chat for Uney Chat using OpenMLS and Telnet protocol
+The Group chat using OpenMLS and Telnet protocol
 
 ## Installation
 
@@ -20,7 +20,7 @@ You'll need to install:
 Run server or Delivery Service
 
 ```bash
-$ cargo run -p openmls-group
+$ cargo run -p did
 ```
 
 Connect to Delivery Service

@@ -1,4 +1,4 @@
-use openmls_group::{accept::start_accept, main_loop::spawn_main_loop};
+use did::{accept::start_accept, main_loop::spawn_main_loop};
 
 #[tokio::main]
 async fn main() {

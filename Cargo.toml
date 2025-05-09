@@ -8,6 +8,6 @@ edition = "2021"
 
 [workspace.dependencies]
 # local crates
-crypto = { path = "./crates/openmls-group", version = "0.0.0" }
+crypto = { path = "./crates/did", version = "0.0.0" }
 
 # non-local crates
