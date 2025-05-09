@@ -1,6 +1,6 @@
-# telnet-openmls-demo
+# telnet-did-demo
 
-The Group chat using OpenMLS and Telnet protocol
+The demo of Decentralized Identifiers (DIDs) v1.0
 
 ## Installation
 
