@@ -1,4 +1,4 @@
-use did::{accept::start_accept, main_loop::spawn_main_loop};
+use telnet::{accept::start_accept, main_loop::spawn_main_loop};
 
 #[tokio::main]
 async fn main() {

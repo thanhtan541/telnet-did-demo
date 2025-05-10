@@ -20,7 +20,7 @@ You'll need to install:
 Run server or Delivery Service
 
 ```bash
-$ cargo run -p did
+$ cargo run -p telnet
 ```
 
 Connect to Delivery Service
