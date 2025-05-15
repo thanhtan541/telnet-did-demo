@@ -1,4 +1,4 @@
-use did::DidDocument;
+use did::{DidDocument, DidStorage};
 use std::{
     collections::HashMap,
     io,
@@ -72,6 +72,7 @@ pub fn spawn_main_loop() -> (ServerHandle, JoinHandle<()>) {
 
 async fn main_loop(mut recv: Receiver<ToDelivery>) -> Result<(), io::Error> {
     let mut data = Data::default();
+    let mut did_storage = DidStorage::new();
 
     while let Some(msg) = recv.recv().await {
         match msg {
@@ -128,6 +129,11 @@ async fn main_loop(mut recv: Receiver<ToDelivery>) -> Result<(), io::Error> {
                     "[Delivery Service] insert document with id: {}",
                     document.id
                 );
+                let doc_id = document.id.clone();
+                match did_storage.store(doc_id, document) {
+                    Ok(_) => println!("[Delivery Service] Insert successfully"),
+                    Err(_) => println!("[Delivery Service] Failed to insert"),
+                }
                 for (id, handle) in data.clients.iter_mut() {
                     let id = *id;
 

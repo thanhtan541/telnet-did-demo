@@ -1,4 +1,3 @@
-use did::DID;
 use std::io;
 use tokio_util::{bytes::Buf, codec::Decoder};
 
