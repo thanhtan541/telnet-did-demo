@@ -2,76 +2,74 @@ use serde::{Deserialize, Serialize};
 
 // Represents a verification method in the DID Document
 #[derive(Serialize, Deserialize, Clone, Debug)]
-struct VerificationMethod {
-    id: String,
+pub struct VerificationMethod {
+    pub id: String,
     #[serde(rename = "type")]
-    type_: String,
-    controller: String,
+    pub type_: String,
+    pub controller: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    public_key_hex: Option<String>,
+    pub public_key_hex: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    public_key_base58: Option<String>,
+    pub public_key_base58: Option<String>,
 }
 
 // Represents a service in the DID Document
 #[derive(Serialize, Deserialize, Clone, Debug)]
-struct Service {
-    id: String,
+pub struct Service {
+    pub id: String,
     #[serde(rename = "type")]
-    type_: String,
+    pub type_: String,
     #[serde(rename = "serviceEndpoint")]
-    service_endpoint: String,
+    pub service_endpoint: String,
 }
 
 // Represents the DID Document
 #[derive(Serialize, Deserialize, Clone, Debug)]
-struct DidDocument {
+pub struct DidDocument {
     #[serde(rename = "@context")]
-    context: Vec<String>,
-    id: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    created: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    updated: Option<String>,
+    pub context: Vec<String>,
+    pub id: String,
     #[serde(rename = "verificationMethod", skip_serializing_if = "Vec::is_empty")]
-    verification_method: Vec<VerificationMethod>,
+    pub verification_method: Vec<VerificationMethod>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    authentication: Vec<String>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    service: Vec<Service>,
+    pub authentication: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub service: Option<Vec<Service>>,
 }
 
 impl DidDocument {
     // Constructor for a minimal DID Document
-    fn new(did: &str) -> Self {
+    pub fn new(did: &str) -> Self {
         DidDocument {
             context: vec!["https://www.w3.org/ns/did/v1".to_string()],
             id: did.to_string(),
-            created: None,
-            updated: None,
             verification_method: vec![],
             authentication: vec![],
-            service: vec![],
+            service: None,
         }
     }
 
     // Add a verification method
-    fn add_verification_method(&mut self, vm: VerificationMethod) {
+    pub fn add_verification_method(&mut self, vm: VerificationMethod) {
         self.verification_method.push(vm);
     }
 
     // Add an authentication reference
-    fn add_authentication(&mut self, auth_id: &str) {
+    pub fn add_authentication(&mut self, auth_id: &str) {
         self.authentication.push(auth_id.to_string());
     }
 
     // Add a service
-    fn add_service(&mut self, service: Service) {
-        self.service.push(service);
+    pub fn add_service(&mut self, service: Service) {
+        if let Some(mut svs) = self.service.take() {
+            svs.push(service);
+        } else {
+            self.service = Some(vec![service]);
+        }
     }
 
     // Serialize to JSON string
-    fn to_json(&self) -> Result<String, serde_json::Error> {
+    pub fn to_json(&self) -> Result<String, serde_json::Error> {
         serde_json::to_string_pretty(self)
     }
 }
