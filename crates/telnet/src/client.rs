@@ -201,6 +201,11 @@ async fn tcp_read(
                 println!("[Client] creating did document");
                 handle.send(ToDelivery::DidDocument(id, did_doc)).await;
             }
+            Item::ShowDID(did) => {
+                let readalbe_string = String::from_utf8(did.clone()).expect("Failed to parsed");
+                println!("[Client] show did: {}", readalbe_string);
+                handle.send(ToDelivery::ShowDocument(id, did)).await;
+            }
             //Todo: Add command direction to server
             item => {
                 return Err(io::Error::new(

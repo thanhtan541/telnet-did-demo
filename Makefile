@@ -50,8 +50,7 @@ test-log:
 	cargo test ${PATTERN} | bunyan
 
 show-todos:
-	grep -rni ./src -e 'todo'
-	grep -rni ./tests -e 'todo'
+	grep -rni ./crates -e 'todo'
 
 # slqx cli is requied
 # cargo install --version="~0.7" sqlx-cli --no-default-features \
