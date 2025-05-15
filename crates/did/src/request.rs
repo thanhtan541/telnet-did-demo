@@ -1,8 +1,5 @@
 use base58::{FromBase58, ToBase58};
-use ed25519_dalek::{
-    ed25519::SignatureBytes, Signature, Signer, SigningKey, Verifier, VerifyingKey,
-};
-use rand::rngs::OsRng;
+use ed25519_dalek::{Signature, Signer, SigningKey, Verifier, VerifyingKey};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::error::Error;
@@ -46,7 +43,7 @@ pub fn create_signed_request(
 }
 
 // Function to verify the signature in a create request
-fn verify_request(request: &CreateRequest, key: &VerifyingKey) -> Result<bool, String> {
+pub fn verify_request(request: &CreateRequest, key: &VerifyingKey) -> Result<bool, String> {
     // Reconstruct payload for verification
     let payload = json!({
         "type": request.request_type,
@@ -68,6 +65,8 @@ mod tests {
 
     #[test]
     fn test_create_and_verify_request() {
+        use rand::rngs::OsRng;
+
         // Generate keypair
         let mut csprng = OsRng;
         let signing_key = SigningKey::generate(&mut csprng);

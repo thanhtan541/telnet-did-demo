@@ -1,6 +1,5 @@
 use ed25519_dalek::VerifyingKey;
 use multibase;
-use rand::rngs::OsRng;
 use std::error::Error;
 
 pub fn encode_public_key_to_multibase(public_key: &VerifyingKey) -> Result<String, Box<dyn Error>> {
@@ -36,6 +35,7 @@ pub fn decode_multibase_to_public_key(multibase_key: &str) -> Result<VerifyingKe
 mod tests {
     use super::*;
     use ed25519_dalek::SigningKey;
+    use rand::rngs::OsRng;
 
     // Test encoding a public key to publicKeyMultibase
     #[test]
