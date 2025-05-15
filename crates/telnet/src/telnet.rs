@@ -1,3 +1,4 @@
+use did::DID;
 use std::io;
 use tokio_util::{bytes::Buf, codec::Decoder};
 
@@ -15,6 +16,7 @@ impl TelnetCodec {
 
 #[derive(Debug)]
 pub enum Item {
+    CreateDID,
     Line(Vec<u8>),
     PublishKeyPackage,
     CreateGroup(Vec<u8>),
@@ -140,39 +142,20 @@ fn is_three_byte_iac(byte: u8) -> bool {
     }
 }
 
-// Mark: Openmls
+// Mark: Decentralized Identifier v1.0
 fn parse_line(line: Vec<u8>) -> Option<Item> {
     println!("[Client] sent command in byte {:?}", line);
     // c#pkp == command: publish key package
-    if line.to_vec() == [99, 34, 112, 107, 112] {
+    if line.to_vec() == [99, 35, 112, 107, 112] {
         println!("[Client] Publishing its keypackage");
 
         return Some(Item::PublishKeyPackage);
     }
-
-    // c#cgw == command: [c]reate [g]roup [w]ith ids of participants
-    // separates by space
-    if line.to_vec()[0..4] == [99, 34, 99, 103] {
-        let curr = &line[5..];
-        let mut ids: Vec<u8> = Vec::new();
-        for value in curr {
-            // 32 is space
-            if value == &32 {
-                continue;
-            }
-
-            ids.push(value.clone());
-        }
-
-        return Some(Item::CreateGroup(ids));
+    // c#cdid == command: [c]reate did
+    if line.to_vec() == [99, 35, 99, 100, 105, 100] {
+        return Some(Item::CreateDID);
     }
-
-    // c#skd == command: [s]how [k]akacge [d]etails
-    if line.to_vec() == [99, 34, 115, 107, 100] {
-        println!("[Client] Show keypackage details");
-
-        return Some(Item::ShowKPDetails);
-    }
+    //Todo: Add command from client
 
     return Some(Item::Line(line));
 }

@@ -1,3 +1,4 @@
+use did::DidDocument;
 use std::{
     collections::HashMap,
     io,
@@ -18,6 +19,7 @@ use crate::{
 pub enum ToDelivery {
     NewClient(ClientHandle),
     Message(ClientId, Vec<u8>),
+    DidDocument(ClientId, DidDocument),
     FatalError(io::Error),
 }
 
@@ -77,10 +79,7 @@ async fn main_loop(mut recv: Receiver<ToDelivery>) -> Result<(), io::Error> {
                 println!("[Delivery Service] received new client");
                 data.clients.insert(handle.id, handle);
 
-                let otp = "1234";
-                println!("[Delivery Service] generated new OTP: {}", otp);
-                println!("[Delivery Service] sent OTP to client");
-                let msg_to_client = "Please provide the otp!";
+                let msg_to_client = "Welcome!";
                 let msg = FromDelivery::Message(msg_to_client.as_bytes().to_vec());
 
                 for (id, handle) in data.clients.iter_mut() {
@@ -122,6 +121,28 @@ async fn main_loop(mut recv: Receiver<ToDelivery>) -> Result<(), io::Error> {
                             eprintln!("[Delivery Service] Something went wrong: {}.", err);
                         }
                     };
+                }
+            }
+            ToDelivery::DidDocument(from_id, document) => {
+                println!(
+                    "[Delivery Service] insert document with id: {}",
+                    document.id
+                );
+                for (id, handle) in data.clients.iter_mut() {
+                    let id = *id;
+
+                    // Don't send it to the client who sent it to us.
+                    if id == from_id {
+                        let msg_to_client = "Your Did Document is saved!";
+                        let msg = FromDelivery::Message(msg_to_client.as_bytes().to_vec());
+
+                        match handle.send(msg) {
+                            Ok(()) => {}
+                            Err(err) => {
+                                eprintln!("[Delivery Service] Something went wrong: {}.", err);
+                            }
+                        };
+                    }
                 }
             }
             ToDelivery::FatalError(err) => return Err(err),

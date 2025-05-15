@@ -1,5 +1,6 @@
 use std::{io, net::SocketAddr};
 
+use did::{DidDocument, DID};
 use futures::stream::StreamExt;
 use tokio::{
     io::AsyncWriteExt,
@@ -190,6 +191,17 @@ async fn tcp_read(
             Item::Line(line) => {
                 handle.send(ToDelivery::Message(id, line)).await;
             }
+            Item::PublishKeyPackage => {
+                println!("[Client] show publish key package");
+            }
+            Item::CreateDID => {
+                let did = DID::generate();
+                println!("[Client] creating did: {}", did.id);
+                let did_doc = DidDocument::new(&did.id);
+                println!("[Client] creating did document");
+                handle.send(ToDelivery::DidDocument(id, did_doc)).await;
+            }
+            //Todo: Add command direction to server
             item => {
                 return Err(io::Error::new(
                     io::ErrorKind::Other,

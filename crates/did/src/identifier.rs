@@ -1,3 +1,4 @@
+use rand::Rng;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
@@ -7,11 +8,11 @@ pub struct Keypair {}
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DID {
     /// The complete DID string, e.g., "did:example:123456789abcdefghi".
-    id: String,
+    pub id: String,
     /// The DID method, e.g., "example".
-    method: String,
+    pub method: String,
     /// The method-specific identifier, e.g., "123456789abcdefghi".
-    method_specific_id: String,
+    pub method_specific_id: String,
 }
 
 impl DID {
@@ -53,6 +54,13 @@ impl DID {
         })
     }
 
+    pub fn generate() -> Self {
+        let random = generate_random_string(18);
+        let did = format!("did:example:{}", random);
+
+        DID::new(&did).expect("Failed to generate new DID")
+    }
+
     /// Returns the DID string.
     pub fn id(&self) -> &str {
         &self.id
@@ -75,9 +83,28 @@ impl fmt::Display for DID {
     }
 }
 
+fn generate_random_string(length: usize) -> String {
+    let charset: Vec<char> = "abcdefghijklmnopqrstuvwxyz0123456789".chars().collect();
+
+    rand::thread_rng()
+        .sample_iter(&rand::distributions::Slice::new(&charset).unwrap())
+        .take(length)
+        .collect()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_generate_random_string() {
+        let result = generate_random_string(18);
+        assert_eq!(result.len(), 18, "Length should be 18");
+        assert!(
+            result.chars().all(|c| c.is_lowercase() || c.is_digit(10)),
+            "All characters should be lowercase letters or digits"
+        );
+    }
 
     #[test]
     fn test_valid_did() {
