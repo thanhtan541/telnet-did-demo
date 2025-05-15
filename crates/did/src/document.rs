@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 pub struct VerificationMethod {
     pub id: String,
     #[serde(rename = "type")]
-    pub type_: String,
+    pub vc_type: String,
     pub controller: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub public_key_hex: Option<String>,
@@ -74,41 +74,67 @@ impl DidDocument {
     }
 }
 
+pub fn generate_document(
+    did: &str,
+    base58_signing_key: Option<String>,
+) -> Result<DidDocument, String> {
+    // Create a new DID Document
+    let mut did_doc = DidDocument::new(did);
+
+    // Add a verification method
+    let ver_method_id_1 = format!("{}#key1", did);
+    let verification_method = VerificationMethod {
+        id: ver_method_id_1.to_string(),
+        vc_type: "Ed25519VerificationKey2020".to_string(),
+        controller: did.to_string(),
+        public_key_hex: None,
+        public_key_base58: base58_signing_key,
+    };
+    did_doc.add_verification_method(verification_method);
+
+    // Add authentication
+    did_doc.add_authentication(&ver_method_id_1);
+
+    // Add a service
+    let service = Service {
+        id: "did:example:123456789abcdefghi#vcs".to_string(),
+        type_: "VerifiableCredentialService".to_string(),
+        service_endpoint: "https://example.com/vc/".to_string(),
+    };
+    did_doc.add_service(service);
+
+    Ok(did_doc)
+}
+
 #[cfg(test)]
 mod tests {
+    use ed25519_dalek::SigningKey;
+    use rand_core::OsRng;
+
+    use crate::encode_public_key_to_multibase;
+
     use super::*;
 
     #[test]
-    fn generate_document() {
+    fn test_generate_document() {
         let did = "did:example:123456789abcdefghi";
-        // Create a new DID Document
-        let mut did_doc = DidDocument::new(did);
+        let doc = generate_document(did, None);
 
-        // Add a verification method
-        let verification_method = VerificationMethod {
-            id: "did:example:123456789abcdefghi#keys-1".to_string(),
-            type_: "Ed25519VerificationKey2018".to_string(),
-            controller: did.to_string(),
-            public_key_hex: None,
-            public_key_base58: Some("H3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV".to_string()),
-        };
-        did_doc.add_verification_method(verification_method);
+        assert!(doc.is_ok());
+    }
 
-        // Add authentication
-        did_doc.add_authentication("did:example:123456789abcdefghi#keys-1");
+    #[test]
+    fn test_verify_document() {
+        // Generate signing, verifying keypair
+        let mut csprng = OsRng;
+        let signing_key = SigningKey::generate(&mut csprng);
+        let verifying_key = signing_key.verifying_key();
+        let encoded_vk = encode_public_key_to_multibase(&verifying_key)
+            .expect("Failed to encoded verifying key");
 
-        // Add a service
-        let service = Service {
-            id: "did:example:123456789abcdefghi#vcs".to_string(),
-            type_: "VerifiableCredentialService".to_string(),
-            service_endpoint: "https://example.com/vc/".to_string(),
-        };
-        did_doc.add_service(service);
+        let did = "did:example:123456789abcdefghi";
+        let doc = generate_document(did, Some(encoded_vk));
 
-        // Serialize to JSON
-        match did_doc.to_json() {
-            Ok(json) => println!("DID Document:\n{}", json),
-            Err(e) => eprintln!("Serialization error: {}", e),
-        }
+        assert!(doc.is_ok());
     }
 }

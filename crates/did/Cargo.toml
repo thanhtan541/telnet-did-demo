@@ -6,4 +6,9 @@ edition.workspace = true
 
 [dependencies]
 serde = { workspace = true }
+ed25519-dalek = { workspace = true }
 serde_json = { workspace = true }
+rand = { workspace = true }
+rand_core = { workspace = true }
+base58 = { workspace = true }
+multibase = { workspace = true }

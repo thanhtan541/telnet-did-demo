@@ -60,7 +60,7 @@ mod tests {
         // Add a verification method
         let verification_method = VerificationMethod {
             id: "did:example:123456789abcdefghi#keys-1".to_string(),
-            type_: "Ed25519VerificationKey2018".to_string(),
+            vc_type: "Ed25519VerificationKey2018".to_string(),
             controller: did.to_string(),
             public_key_hex: None,
             public_key_base58: Some("H3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV".to_string()),

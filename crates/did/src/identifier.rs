@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
+pub struct Keypair {}
+
 /// Represents a Decentralized Identifier (DID) as per W3C DID v1.0 specification.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DID {
