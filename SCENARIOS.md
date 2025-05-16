@@ -167,3 +167,12 @@ Ed25519_Verify(alice_public_key, signature, SHA-256(canonicalized_message)) == t
   - Confirms Alice's DID matches the credentialSubject to ensure she is the rightful holder.
 
 ---
+# ShieldNetID (Identify)
+Alice joined ShieldNetId
+
+## Steps
+Alice create join ShieldNetID and get her bronze badge
+Her badge has information about credit score
+Should she get a VC from Shieldnet
+
+---

@@ -12,3 +12,5 @@ rand = { workspace = true }
 rand_core = { workspace = true }
 base58 = { workspace = true }
 multibase = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
