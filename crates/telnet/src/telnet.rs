@@ -16,13 +16,11 @@ impl TelnetCodec {
 #[derive(Debug)]
 pub enum Item {
     ShowDID(Vec<u8>),
+    VerifyDID(Vec<u8>),
     AssignRole(Vec<u8>),
     WhoAmI,
     CreateDID,
     Line(Vec<u8>),
-    PublishKeyPackage,
-    CreateGroup(Vec<u8>),
-    ShowKPDetails,
     SE,
     DataMark,
     Break,
@@ -147,12 +145,6 @@ fn is_three_byte_iac(byte: u8) -> bool {
 // Mark: Decentralized Identifier v1.0
 fn parse_line(line: Vec<u8>) -> Option<Item> {
     println!("[Client] sent command in byte {:?}", line);
-    // c#pkp == command: publish key package
-    if line.to_vec() == [99, 35, 112, 107, 112] {
-        println!("[Client] Publishing its keypackage");
-
-        return Some(Item::PublishKeyPackage);
-    }
     // c#cdid == command: [c]reate did
     if line.to_vec() == [99, 35, 99, 100, 105, 100] {
         return Some(Item::CreateDID);
@@ -173,6 +165,12 @@ fn parse_line(line: Vec<u8>) -> Option<Item> {
     if line.to_vec()[0..4] == [99, 35, 97, 114] {
         let role = &line[4..];
         return Some(Item::AssignRole(role.to_vec()));
+    }
+
+    // c#vdid == command: [v]erify did
+    if line.to_vec()[0..6] == [99, 35, 118, 100, 105, 100] {
+        let did = &line[6..];
+        return Some(Item::VerifyDID(did.to_vec()));
     }
     //Todo: Add command from client
 

@@ -224,9 +224,6 @@ async fn tcp_read(
             Item::Line(line) => {
                 handle.send(ToDelivery::Message(id, line)).await;
             }
-            Item::PublishKeyPackage => {
-                println!("[Client] show publish key package");
-            }
             Item::CreateDID => {
                 let did = DID::generate();
                 println!("[Client] creating did: {}", did.id);
@@ -252,6 +249,11 @@ async fn tcp_read(
             Item::WhoAmI => {
                 println!("[Client] Asking for who they are");
                 handle.send(ToDelivery::MyInfo(id)).await;
+            }
+            Item::VerifyDID(did) => {
+                let readalbe_string = String::from_utf8(did.clone()).expect("Failed to parsed");
+                println!("[Client] Verifying did: {}", readalbe_string);
+                handle.send(ToDelivery::VerifyDID(id, did)).await;
             }
             //Todo: Add command direction to server
             item => {

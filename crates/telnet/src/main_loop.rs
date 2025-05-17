@@ -22,6 +22,7 @@ pub enum ToDelivery {
     MyInfo(ClientId),
     Message(ClientId, Vec<u8>),
     ShowDocument(ClientId, Vec<u8>),
+    VerifyDID(ClientId, Vec<u8>),
     DidDocument(ClientId, DidDocument),
     FatalError(io::Error),
 }
@@ -209,6 +210,29 @@ async fn main_loop(mut recv: Receiver<ToDelivery>) -> Result<(), io::Error> {
                             None => "Anonymous".into(),
                         };
                         let msg_to_client = format!("Hello {:?}", role);
+                        let msg = FromDelivery::Message(msg_to_client.as_bytes().to_vec());
+
+                        match handle.send(msg) {
+                            Ok(()) => {}
+                            Err(err) => {
+                                eprintln!("[Delivery Service] Something went wrong: {}.", err);
+                            }
+                        };
+                    }
+                }
+            }
+            ToDelivery::VerifyDID(from_id, did) => {
+                let did = String::from_utf8(did).expect("Failed to parsed");
+                println!("[Delivery Service] verifying document with id: {}", did);
+                let msg_to_client = match did_storage.get(&did) {
+                    Some(doc) => doc.to_json().expect("Failed to parsed"),
+                    None => "Not found".into(),
+                };
+                for (id, handle) in data.clients.iter_mut() {
+                    let id = *id;
+
+                    // Don't send it to the client who sent it to us.
+                    if id == from_id {
                         let msg = FromDelivery::Message(msg_to_client.as_bytes().to_vec());
 
                         match handle.send(msg) {
