@@ -16,6 +16,8 @@ impl TelnetCodec {
 #[derive(Debug)]
 pub enum Item {
     ShowDID(Vec<u8>),
+    AssignRole(Vec<u8>),
+    WhoAmI,
     CreateDID,
     Line(Vec<u8>),
     PublishKeyPackage,
@@ -156,10 +158,21 @@ fn parse_line(line: Vec<u8>) -> Option<Item> {
         return Some(Item::CreateDID);
     }
 
+    // c#ar == command: [w]ho [a]m [i]
+    if line.to_vec() == [99, 35, 119, 97, 105] {
+        return Some(Item::WhoAmI);
+    }
+
     // c#sdid == command: [c]reate did
     if line.to_vec()[0..6] == [99, 35, 115, 100, 105, 100] {
         let did = &line[6..];
         return Some(Item::ShowDID(did.to_vec()));
+    }
+
+    // c#ar == command: [a]ssign [r]ole
+    if line.to_vec()[0..4] == [99, 35, 97, 114] {
+        let role = &line[4..];
+        return Some(Item::AssignRole(role.to_vec()));
     }
     //Todo: Add command from client
 

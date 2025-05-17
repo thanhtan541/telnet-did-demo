@@ -11,13 +11,15 @@ use tokio::sync::mpsc::{channel, Receiver, Sender};
 use tokio::task::JoinHandle;
 
 use crate::{
-    client::{ClientHandle, FromDelivery},
+    client::{ClientHandle, ClientRole, FromDelivery},
     ClientId,
 };
 
 // Define the messages the actor can handle
 pub enum ToDelivery {
     NewClient(ClientHandle),
+    NewRole(ClientId, ClientRole),
+    MyInfo(ClientId),
     Message(ClientId, Vec<u8>),
     ShowDocument(ClientId, Vec<u8>),
     DidDocument(ClientId, DidDocument),
@@ -164,6 +166,49 @@ async fn main_loop(mut recv: Receiver<ToDelivery>) -> Result<(), io::Error> {
 
                     // Don't send it to the client who sent it to us.
                     if id == from_id {
+                        let msg = FromDelivery::Message(msg_to_client.as_bytes().to_vec());
+
+                        match handle.send(msg) {
+                            Ok(()) => {}
+                            Err(err) => {
+                                eprintln!("[Delivery Service] Something went wrong: {}.", err);
+                            }
+                        };
+                    }
+                }
+            }
+            ToDelivery::NewRole(from_id, role) => {
+                println!("[Delivery Service] Updating role: {:?}", role.clone());
+                let msg_to_client = format!("Hello {:?}", role.clone());
+                for (id, handle) in data.clients.iter_mut() {
+                    let id = *id;
+
+                    // Don't send it to the client who sent it to us.
+                    if id == from_id {
+                        handle.role = Some(role.clone());
+                        let msg = FromDelivery::Message(msg_to_client.as_bytes().to_vec());
+
+                        match handle.send(msg) {
+                            Ok(()) => {}
+                            Err(err) => {
+                                eprintln!("[Delivery Service] Something went wrong: {}.", err);
+                            }
+                        };
+                    }
+                }
+            }
+            ToDelivery::MyInfo(from_id) => {
+                println!("[Delivery Service] Responding to who you are");
+                for (id, handle) in data.clients.iter_mut() {
+                    let id = *id;
+
+                    // Don't send it to the client who sent it to us.
+                    if id == from_id {
+                        let role = match &handle.role {
+                            Some(r) => format!("{:?}", r),
+                            None => "Anonymous".into(),
+                        };
+                        let msg_to_client = format!("Hello {:?}", role);
                         let msg = FromDelivery::Message(msg_to_client.as_bytes().to_vec());
 
                         match handle.send(msg) {

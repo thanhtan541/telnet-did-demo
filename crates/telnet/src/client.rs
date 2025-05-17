@@ -1,3 +1,4 @@
+use std::error::Error;
 use std::{io, net::SocketAddr};
 
 use did::{DidDocument, DID};
@@ -30,6 +31,36 @@ pub enum FromDelivery {
     Message(Vec<u8>),
 }
 
+#[derive(Debug, Clone)]
+pub enum ClientRole {
+    Holder,
+    Issuer,
+    Verifier,
+}
+#[derive(Debug)]
+pub struct InvalidClientRoleError;
+
+impl std::fmt::Display for InvalidClientRoleError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Invalid client role")
+    }
+}
+
+impl Error for InvalidClientRoleError {}
+
+impl TryFrom<String> for ClientRole {
+    type Error = InvalidClientRoleError;
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        match value.as_str() {
+            "holder" => Ok(ClientRole::Holder),
+            "issuer" => Ok(ClientRole::Issuer),
+            "verifier" => Ok(ClientRole::Verifier),
+            _ => Err(InvalidClientRoleError),
+        }
+    }
+}
+
 /// This struct is constructed by the accept loop and used as the argument to
 /// `spawn_client`.
 pub struct ClientInfo {
@@ -53,6 +84,7 @@ pub struct ClientHandle {
     ip: SocketAddr,
     chan: Sender<FromDelivery>,
     kill: JoinHandle<()>,
+    pub role: Option<ClientRole>,
 }
 
 impl ClientHandle {
@@ -100,6 +132,7 @@ pub fn spawn_client(info: ClientInfo) {
         ip: info.ip,
         chan: send,
         kill,
+        role: None,
     };
 
     // Ignore send errors here. Should only happen if the server is shutting
@@ -205,6 +238,20 @@ async fn tcp_read(
                 let readalbe_string = String::from_utf8(did.clone()).expect("Failed to parsed");
                 println!("[Client] show did: {}", readalbe_string);
                 handle.send(ToDelivery::ShowDocument(id, did)).await;
+            }
+            Item::AssignRole(role) => {
+                let role = String::from_utf8(role.clone()).expect("Failed to parsed");
+                println!("[Client] Assinging new role: {}", role);
+                handle
+                    .send(ToDelivery::NewRole(
+                        id,
+                        role.try_into().expect("Failed to parse role"),
+                    ))
+                    .await;
+            }
+            Item::WhoAmI => {
+                println!("[Client] Asking for who they are");
+                handle.send(ToDelivery::MyInfo(id)).await;
             }
             //Todo: Add command direction to server
             item => {
