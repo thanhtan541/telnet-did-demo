@@ -15,6 +15,8 @@ use crate::{
     ClientId,
 };
 
+static CONTEXT: &str = "Verifiable Registry";
+
 // Define the messages the actor can handle
 pub enum ToDelivery {
     NewClient(ClientHandle),
@@ -81,7 +83,7 @@ async fn main_loop(mut recv: Receiver<ToDelivery>) -> Result<(), io::Error> {
     while let Some(msg) = recv.recv().await {
         match msg {
             ToDelivery::NewClient(handle) => {
-                println!("[Delivery Service] received new client");
+                println!("[{}] received new client", CONTEXT);
                 data.clients.insert(handle.id, handle);
 
                 let msg_to_client = "Welcome!";
@@ -95,7 +97,7 @@ async fn main_loop(mut recv: Receiver<ToDelivery>) -> Result<(), io::Error> {
                         match handle.send(msg) {
                             Ok(()) => {}
                             Err(err) => {
-                                eprintln!("[Delivery Service] Something went wrong: {}.", err);
+                                eprintln!("[{}] Something went wrong: {}.", CONTEXT, err);
                             }
                         };
 
@@ -108,7 +110,7 @@ async fn main_loop(mut recv: Receiver<ToDelivery>) -> Result<(), io::Error> {
                 // it, but we can't do so while iterating.
                 // let mut to_remove = Vec::new();
 
-                println!("[Delivery Service] received message");
+                println!("[{}] received message", CONTEXT);
                 // Iterate through clients so we can send the message.
                 for (id, handle) in data.clients.iter_mut() {
                     let id = *id;
@@ -123,20 +125,17 @@ async fn main_loop(mut recv: Receiver<ToDelivery>) -> Result<(), io::Error> {
                     match handle.send(msg) {
                         Ok(()) => {}
                         Err(err) => {
-                            eprintln!("[Delivery Service] Something went wrong: {}.", err);
+                            eprintln!("[{}] Something went wrong: {}.", CONTEXT, err);
                         }
                     };
                 }
             }
             ToDelivery::DidDocument(from_id, document) => {
-                println!(
-                    "[Delivery Service] insert document with id: {}",
-                    document.id
-                );
+                println!("[{}] insert document with id: {}", CONTEXT, document.id);
                 let doc_id = document.id.clone();
                 match did_storage.store(doc_id, document) {
-                    Ok(_) => println!("[Delivery Service] Insert successfully"),
-                    Err(_) => println!("[Delivery Service] Failed to insert"),
+                    Ok(_) => println!("[{}] Insert successfully", CONTEXT),
+                    Err(_) => println!("[{}] Failed to insert", CONTEXT),
                 }
                 for (id, handle) in data.clients.iter_mut() {
                     let id = *id;
@@ -149,7 +148,7 @@ async fn main_loop(mut recv: Receiver<ToDelivery>) -> Result<(), io::Error> {
                         match handle.send(msg) {
                             Ok(()) => {}
                             Err(err) => {
-                                eprintln!("[Delivery Service] Something went wrong: {}.", err);
+                                eprintln!("[{}] Something went wrong: {}.", CONTEXT, err);
                             }
                         };
                     }
@@ -157,7 +156,7 @@ async fn main_loop(mut recv: Receiver<ToDelivery>) -> Result<(), io::Error> {
             }
             ToDelivery::ShowDocument(from_id, did) => {
                 let did = String::from_utf8(did).expect("Failed to parsed");
-                println!("[Delivery Service] look up document with id: {}", did);
+                println!("[{}] look up document with id: {}", CONTEXT, did);
                 let msg_to_client = match did_storage.get(&did) {
                     Some(doc) => doc.to_json().expect("Failed to parsed"),
                     None => "Not found".into(),
@@ -172,14 +171,14 @@ async fn main_loop(mut recv: Receiver<ToDelivery>) -> Result<(), io::Error> {
                         match handle.send(msg) {
                             Ok(()) => {}
                             Err(err) => {
-                                eprintln!("[Delivery Service] Something went wrong: {}.", err);
+                                eprintln!("[{}] Something went wrong: {}.", CONTEXT, err);
                             }
                         };
                     }
                 }
             }
             ToDelivery::NewRole(from_id, role) => {
-                println!("[Delivery Service] Updating role: {:?}", role.clone());
+                println!("[{}] Updating role: {:?}", CONTEXT, role.clone());
                 let msg_to_client = format!("Hello {:?}", role.clone());
                 for (id, handle) in data.clients.iter_mut() {
                     let id = *id;
@@ -192,14 +191,14 @@ async fn main_loop(mut recv: Receiver<ToDelivery>) -> Result<(), io::Error> {
                         match handle.send(msg) {
                             Ok(()) => {}
                             Err(err) => {
-                                eprintln!("[Delivery Service] Something went wrong: {}.", err);
+                                eprintln!("[{}] Something went wrong: {}.", CONTEXT, err);
                             }
                         };
                     }
                 }
             }
             ToDelivery::MyInfo(from_id) => {
-                println!("[Delivery Service] Responding to who you are");
+                println!("[{}] Responding to who you are", CONTEXT);
                 for (id, handle) in data.clients.iter_mut() {
                     let id = *id;
 
@@ -215,7 +214,7 @@ async fn main_loop(mut recv: Receiver<ToDelivery>) -> Result<(), io::Error> {
                         match handle.send(msg) {
                             Ok(()) => {}
                             Err(err) => {
-                                eprintln!("[Delivery Service] Something went wrong: {}.", err);
+                                eprintln!("[{}] Something went wrong: {}.", CONTEXT, err);
                             }
                         };
                     }
@@ -223,7 +222,7 @@ async fn main_loop(mut recv: Receiver<ToDelivery>) -> Result<(), io::Error> {
             }
             ToDelivery::VerifyDID(from_id, did) => {
                 let did = String::from_utf8(did).expect("Failed to parsed");
-                println!("[Delivery Service] verifying document with id: {}", did);
+                println!("[{}] verifying document with id: {}", CONTEXT, did);
                 let msg_to_client = match did_storage.get(&did) {
                     Some(doc) => doc.to_json().expect("Failed to parsed"),
                     None => "Not found".into(),
@@ -238,7 +237,7 @@ async fn main_loop(mut recv: Receiver<ToDelivery>) -> Result<(), io::Error> {
                         match handle.send(msg) {
                             Ok(()) => {}
                             Err(err) => {
-                                eprintln!("[Delivery Service] Something went wrong: {}.", err);
+                                eprintln!("[{}] Something went wrong: {}.", CONTEXT, err);
                             }
                         };
                     }

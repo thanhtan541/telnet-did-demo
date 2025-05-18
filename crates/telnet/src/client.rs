@@ -19,6 +19,8 @@ use tokio::{
 };
 use tokio_util::codec::FramedRead;
 
+static CONTEXT: &str = "Client";
+
 use crate::ClientId;
 use crate::{
     main_loop::{ServerHandle, ToDelivery},
@@ -226,19 +228,19 @@ async fn tcp_read(
             }
             Item::CreateDID => {
                 let did = DID::generate();
-                println!("[Client] creating did: {}", did.id);
+                println!("[{}] creating did: {}", CONTEXT, did.id);
                 let did_doc = DidDocument::new(&did.id);
-                println!("[Client] creating did document");
+                println!("[{}] creating did document", CONTEXT);
                 handle.send(ToDelivery::DidDocument(id, did_doc)).await;
             }
             Item::ShowDID(did) => {
                 let readalbe_string = String::from_utf8(did.clone()).expect("Failed to parsed");
-                println!("[Client] show did: {}", readalbe_string);
+                println!("[{}] show did: {}", CONTEXT, readalbe_string);
                 handle.send(ToDelivery::ShowDocument(id, did)).await;
             }
             Item::AssignRole(role) => {
                 let role = String::from_utf8(role.clone()).expect("Failed to parsed");
-                println!("[Client] Assinging new role: {}", role);
+                println!("[{}] Assinging new role: {}", CONTEXT, role);
                 handle
                     .send(ToDelivery::NewRole(
                         id,
@@ -247,12 +249,12 @@ async fn tcp_read(
                     .await;
             }
             Item::WhoAmI => {
-                println!("[Client] Asking for who they are");
+                println!("[{}] Asking for who they are", CONTEXT);
                 handle.send(ToDelivery::MyInfo(id)).await;
             }
             Item::VerifyDID(did) => {
                 let readalbe_string = String::from_utf8(did.clone()).expect("Failed to parsed");
-                println!("[Client] Verifying did: {}", readalbe_string);
+                println!("[{}] Verifying did: {}", CONTEXT, readalbe_string);
                 handle.send(ToDelivery::VerifyDID(id, did)).await;
             }
             //Todo: Add command direction to server
