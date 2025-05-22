@@ -1,3 +1,4 @@
+pub mod bbs_vp;
 pub mod crypto;
 pub mod document;
 pub mod identifier;
@@ -7,6 +8,7 @@ pub mod verifiable_presentation;
 pub mod verifiable_registry;
 pub mod verification_credential;
 
+pub use bbs_vp::*;
 pub use crypto::*;
 pub use document::*;
 pub use identifier::*;

@@ -22,8 +22,11 @@ image = "0.25.6"
 # Error handler
 thiserror = "1"
 anyhow = "1"
-ssi = "0.11.0"
+ssi = { version = "0.11.0", features = ["bbs"] }
 # Async runtime
 tokio = { version = "1.38.0", features = ["macros", "rt-multi-thread"] }
+# Testing
+async-std = "1.9"
+json-syntax = "0.12.5"
 
 # non-local crates
