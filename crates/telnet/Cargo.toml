@@ -12,3 +12,8 @@ futures = "0.3.12"
 uuid = { version = "1.10.0", features = ["v4", "serde"] }
 thiserror = { version = "1" }
 did = { path = "../did" }
+network-interface = { workspace = true }
+default-net = { workspace = true }
+
+[dev-dependencies]
+mockall = "0.13" # For mocking in tests

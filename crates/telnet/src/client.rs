@@ -1,7 +1,7 @@
 use std::error::Error;
 use std::{io, net::SocketAddr};
 
-use did::{DidDocument, DID};
+use did::{print_qr_code, DidDocument, DID};
 use futures::stream::StreamExt;
 use tokio::{
     io::AsyncWriteExt,
@@ -31,6 +31,7 @@ use crate::{
 pub enum FromDelivery {
     // Should be decrypted data
     Message(Vec<u8>),
+    QR(String),
 }
 
 #[derive(Debug, Clone)]
@@ -257,6 +258,10 @@ async fn tcp_read(
                 println!("[{}] Verifying did: {}", CONTEXT, readalbe_string);
                 handle.send(ToDelivery::VerifyDID(id, did)).await;
             }
+            Item::ShowVP => {
+                println!("[{}] Verifying Presentation", CONTEXT);
+                handle.send(ToDelivery::ShowVP(id)).await;
+            }
             //Todo: Add command direction to server
             item => {
                 return Err(io::Error::new(
@@ -282,6 +287,12 @@ async fn tcp_write(
             msg = recv.recv() => match msg {
                 Some(FromDelivery::Message(msg)) => {
                     write.write_all(&msg).await?;
+                    write.write_all(&[13, 10]).await?;
+                },
+                Some(FromDelivery::QR(url)) => {
+                    let qr = print_qr_code(&url).unwrap();
+                    println!("[{}] Receving QR which encoded url: {}", CONTEXT, url);
+                    write.write_all(&qr.into_bytes()).await?;
                     write.write_all(&[13, 10]).await?;
                 },
                 None => {

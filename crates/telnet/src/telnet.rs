@@ -19,6 +19,7 @@ pub enum Item {
     VerifyDID(Vec<u8>),
     AssignRole(Vec<u8>),
     WhoAmI,
+    ShowVP, // Show Verifiable Presentation
     CreateDID,
     Line(Vec<u8>),
     SE,
@@ -153,6 +154,11 @@ fn parse_line(line: Vec<u8>) -> Option<Item> {
     // c#ar == command: [w]ho [a]m [i]
     if line.to_vec() == [99, 35, 119, 97, 105] {
         return Some(Item::WhoAmI);
+    }
+
+    // c#svp == command: [s]how [v]erifiable [p]resenation
+    if line.to_vec() == [99, 35, 115, 118, 112] {
+        return Some(Item::ShowVP);
     }
 
     // c#sdid == command: [c]reate did

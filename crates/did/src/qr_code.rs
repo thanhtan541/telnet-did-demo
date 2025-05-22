@@ -122,6 +122,17 @@ mod tests {
     }
 
     #[test]
+    fn test_print_qr_code() {
+        let test_data = "https://example.com";
+
+        // Generate QR code for terminal
+        let result = print_qr_code(test_data);
+        let qr = result.unwrap();
+        println!("{}", qr);
+        assert!(true);
+    }
+
+    #[test]
     fn test_print_qr_code_empty_input() {
         let test_data = "";
 

@@ -9,6 +9,7 @@ pub mod accept;
 pub mod client;
 pub mod main_loop;
 pub mod telnet;
+pub mod util;
 
 use std::fmt::Display;
 

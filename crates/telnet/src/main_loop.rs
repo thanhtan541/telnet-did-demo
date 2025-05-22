@@ -12,6 +12,7 @@ use tokio::task::JoinHandle;
 
 use crate::{
     client::{ClientHandle, ClientRole, FromDelivery},
+    util::get_ipv4_info,
     ClientId,
 };
 
@@ -22,6 +23,7 @@ pub enum ToDelivery {
     NewClient(ClientHandle),
     NewRole(ClientId, ClientRole),
     MyInfo(ClientId),
+    ShowVP(ClientId),
     Message(ClientId, Vec<u8>),
     ShowDocument(ClientId, Vec<u8>),
     VerifyDID(ClientId, Vec<u8>),
@@ -210,6 +212,27 @@ async fn main_loop(mut recv: Receiver<ToDelivery>) -> Result<(), io::Error> {
                         };
                         let msg_to_client = format!("Hello {:?}", role);
                         let msg = FromDelivery::Message(msg_to_client.as_bytes().to_vec());
+
+                        match handle.send(msg) {
+                            Ok(()) => {}
+                            Err(err) => {
+                                eprintln!("[{}] Something went wrong: {}.", CONTEXT, err);
+                            }
+                        };
+                    }
+                }
+            }
+            ToDelivery::ShowVP(from_id) => {
+                println!("[{}] Responding to show verifiable presentation", CONTEXT);
+                for (id, handle) in data.clients.iter_mut() {
+                    let id = *id;
+
+                    // Don't send it to the client who sent it to us.
+                    if id == from_id {
+                        let ip = get_ipv4_info().unwrap()[0].ip;
+                        println!("[{}] Current ip is {}", CONTEXT, ip);
+                        let url = format!("http://{}:8000/qr", ip);
+                        let msg = FromDelivery::QR(url);
 
                         match handle.send(msg) {
                             Ok(()) => {}
