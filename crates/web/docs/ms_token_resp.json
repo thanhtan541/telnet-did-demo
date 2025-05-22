@@ -1,1 +1,7 @@
-{"token_type":"Bearer","scope":"Organization.Read.All Policy.ReadWrite.ApplicationConfiguration User.Read .default","expires_in":4788,"ext_expires_in":4788,"access_token":"token","refresh_token":"refresh_token","id_token":"token_id","client_info":"client_info"}
+{
+  "crv": "P-256",
+  "kid": "did:jwk:eyJjcnYiOiJQLTI1NiIsImt0eSI6IkVDIiwieCI6ImlOMzd3dlpUeGw2TmIzdXpsNVQ0WHBuczY1NkE1V2EwUFRqSzczVE8wM1UiLCJ5IjoieU0yNG56T3hPenNvQVVES1JGVGVONzVCZHVZbWtCVlhvSFBpaG1MVEIxWSJ9#0",
+  "kty": "EC",
+  "x": "iN37wvZTxl6Nb3uzl5T4Xpns656A5Wa0PTjK73TO03U",
+  "y": "yM24nzOxOzsoAUDKRFTeN75BduYmkBVXoHPihmLTB1Y"
+}

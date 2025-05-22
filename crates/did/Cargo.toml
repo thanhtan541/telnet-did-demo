@@ -16,3 +16,5 @@ chrono = { workspace = true }
 qrcode = { workspace = true }
 uuid = { workspace = true }
 image = { workspace = true }
+ssi = { workspace = true }
+tokio = { workspace = true }

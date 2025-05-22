@@ -22,5 +22,8 @@ image = "0.25.6"
 # Error handler
 thiserror = "1"
 anyhow = "1"
+ssi = "0.11.0"
+# Async runtime
+tokio = { version = "1.38.0", features = ["macros", "rt-multi-thread"] }
 
 # non-local crates

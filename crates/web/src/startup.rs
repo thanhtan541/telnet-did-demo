@@ -1,12 +1,11 @@
 use actix_cors::Cors;
 use actix_web::{dev::Server, web::Data, App, HttpServer};
-use reqwest::header::{AUTHORIZATION, CONTENT_TYPE};
 use std::{io::Error, net::TcpListener};
 use tracing_actix_web::TracingLogger;
 
 use crate::{
     configuration::Settings,
-    routes::{health_check, index},
+    routes::{health_check, index, qr},
 };
 
 pub struct ApplicationBaseUrl(pub String);
@@ -45,10 +44,7 @@ async fn run(listener: TcpListener, base_url: String) -> Result<Server, anyhow::
     let base_url = Data::new(ApplicationBaseUrl(base_url));
     let server = HttpServer::new(move || {
         let cors = Cors::default()
-            //Todo: Put to confguration and don't use localhost. it cause prelight problem in FE.
-            .allowed_origin("http://127.0.0.1:8080")
-            .allowed_methods(vec!["GET", "POST", "OPTIONS"])
-            .allowed_headers(vec![AUTHORIZATION, CONTENT_TYPE])
+            .allow_any_origin()
             // .allowed_header(http::header::CONTENT_TYPE)
             .max_age(3600);
         App::new()
@@ -58,6 +54,7 @@ async fn run(listener: TcpListener, base_url: String) -> Result<Server, anyhow::
             .wrap(cors)
             .service(index)
             .service(health_check)
+            .service(qr)
             .app_data(base_url.clone())
     })
     .listen(listener)?
