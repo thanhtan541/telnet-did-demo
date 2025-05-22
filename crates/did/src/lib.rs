@@ -1,17 +1,17 @@
 pub mod crypto;
 pub mod document;
 pub mod identifier;
-pub mod presentation;
 pub mod qr_code;
 pub mod request;
+pub mod verifiable_presentation;
 pub mod verifiable_registry;
 pub mod verification_credential;
 
 pub use crypto::*;
 pub use document::*;
 pub use identifier::*;
-pub use presentation::*;
 pub use qr_code::*;
 pub use request::*;
+pub use verifiable_presentation::*;
 pub use verifiable_registry::*;
 pub use verification_credential::*;
