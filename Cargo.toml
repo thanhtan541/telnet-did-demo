@@ -19,5 +19,8 @@ chrono = "0.4.41"
 uuid = "1.16.0"
 qrcode = "0.14.1"
 image = "0.25.6"
+# Error handler
+thiserror = "1"
+anyhow = "1"
 
 # non-local crates

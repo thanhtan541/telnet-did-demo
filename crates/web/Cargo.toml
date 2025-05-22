@@ -19,8 +19,8 @@ actix-cors = "0.7.0"
 # Env configuration
 config = "0.13"
 # Error handler
-thiserror = "1"
-anyhow = "1"
+thiserror = { workspace = true }
+anyhow = { workspace = true }
 # Telemetry
 tracing = { version = "0.1", features = ["log"] }
 tracing-subscriber = { version = "0.3", features = ["registry", "env-filter"] }
@@ -44,19 +44,6 @@ ring = "0.17.8"
 sha2 = "0.10"
 hmac = { version = "0.12", features = ["std"] }
 argon2 = { version = "0.4", features = ["std"] }
-
-# Database connection
-[dependencies.sqlx]
-version = "0.7"
-default-features = false
-features = [
-    "runtime-tokio-rustls",
-    "macros",
-    "postgres",
-    "uuid",
-    "chrono",
-    "migrate",
-]
 
 # Http client
 [dependencies.reqwest]
