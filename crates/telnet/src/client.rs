@@ -1,7 +1,7 @@
 use std::error::Error;
 use std::{io, net::SocketAddr};
 
-use did::{print_qr_code, DidDocument, DID};
+use did::{print_qr_code, DidDocument, VerificationMethod, DID};
 use futures::stream::StreamExt;
 use tokio::{
     io::AsyncWriteExt,
@@ -229,8 +229,21 @@ async fn tcp_read(
             }
             Item::CreateDID => {
                 let did = DID::generate();
+
                 println!("[{}] creating did: {}", CONTEXT, did.id);
-                let did_doc = DidDocument::new(&did.id);
+                let mut did_doc = DidDocument::new(&did.id);
+                let ver_method_id_1 = format!("{}#key1", did);
+                let verification_method = VerificationMethod {
+                    id: ver_method_id_1.to_string(),
+                    vc_type: "Ed25519VerificationKey2020".to_string(),
+                    controller: did.to_string(),
+                    public_key_hex: None,
+                    public_key_base58: Some("SigningKey".into()),
+                };
+                did_doc.add_verification_method(verification_method);
+
+                // Add authentication
+                did_doc.add_authentication(&ver_method_id_1);
                 println!("[{}] creating did document", CONTEXT);
                 handle.send(ToDelivery::DidDocument(id, did_doc)).await;
             }

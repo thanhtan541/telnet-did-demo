@@ -1,4 +1,4 @@
-use std::io;
+use std::io::{self, Read};
 use tokio_util::{bytes::Buf, codec::Decoder};
 
 pub struct TelnetCodec {
@@ -145,36 +145,39 @@ fn is_three_byte_iac(byte: u8) -> bool {
 
 // Mark: Decentralized Identifier v1.0
 fn parse_line(line: Vec<u8>) -> Option<Item> {
-    println!("[Client] sent command in byte {:?}", line);
+    println!(
+        "[Client] sent command in byte {:?}",
+        String::from_utf8_lossy(&line)
+    );
     // c#cdid == command: [c]reate did
-    if line.to_vec() == [99, 35, 99, 100, 105, 100] {
+    if line.to_vec() == b"c#cdid".to_vec() {
         return Some(Item::CreateDID);
     }
 
-    // c#ar == command: [w]ho [a]m [i]
-    if line.to_vec() == [99, 35, 119, 97, 105] {
+    // c#wai== command: [w]ho [a]m [i]
+    if line.to_vec() == b"c#wai".to_vec() {
         return Some(Item::WhoAmI);
     }
 
     // c#svp == command: [s]how [v]erifiable [p]resenation
-    if line.to_vec() == [99, 35, 115, 118, 112] {
+    if line.to_vec() == b"c#svp".to_vec() {
         return Some(Item::ShowVP);
     }
 
-    // c#sdid == command: [c]reate did
-    if line.to_vec()[0..6] == [99, 35, 115, 100, 105, 100] {
+    // c#sdid == command: [s]show did
+    if line.to_vec()[0..6] == b"c#sdid".to_vec() {
         let did = &line[6..];
         return Some(Item::ShowDID(did.to_vec()));
     }
 
     // c#ar == command: [a]ssign [r]ole
-    if line.to_vec()[0..4] == [99, 35, 97, 114] {
+    if line.to_vec()[0..4] == b"c#ar".to_vec() {
         let role = &line[4..];
         return Some(Item::AssignRole(role.to_vec()));
     }
 
     // c#vdid == command: [v]erify did
-    if line.to_vec()[0..6] == [99, 35, 118, 100, 105, 100] {
+    if line.to_vec()[0..6] == b"c#vdid".to_vec() {
         let did = &line[6..];
         return Some(Item::VerifyDID(did.to_vec()));
     }
