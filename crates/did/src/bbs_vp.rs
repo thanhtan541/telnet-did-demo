@@ -27,7 +27,9 @@ mod tests {
                 "https://www.w3.org/ns/credentials/v2",
                 {
                     "foo": "http://example.org/#foo",
-                    "bar": "http://example.org/#bar"
+                    "bar": "http://example.org/#bar",
+                    "age": "http://example.org/#age",
+                    "single": "http://example.org/#single"
                 }
             ],
             "type": [
@@ -36,7 +38,9 @@ mod tests {
             "credentialSubject": {
                 "id": "did:key:z6MkhTNL7i2etLerDK8Acz5t528giE5KA4p75T6ka1E1D74r",
                 "foo": "value1",
-                "bar": "value2"
+                "bar": "value2",
+                "age": "18",
+                "single": "yes",
             },
             "id": "urn:uuid:7a6cafb9-11c3-41a8-98d8-8b5a45c2548f",
             "issuer": did_url.to_string()
@@ -52,9 +56,10 @@ mod tests {
             )
             .await
             .unwrap();
-        println!("{:?}", base_vc.credential_subjects());
-
-        assert!(false);
+        println!(
+            "Based Verifiable Credential Subjects, {:?}",
+            base_vc.credential_subjects()
+        );
 
         let params = VerificationParameters::from_resolver(&resolver);
         let mut selection = ssi::claims::data_integrity::AnySelectionOptions::default();
@@ -62,6 +67,8 @@ mod tests {
             "/id".parse().unwrap(),
             "/type".parse().unwrap(),
             "/credentialSubject/foo".parse().unwrap(),
+            "/credentialSubject/age".parse().unwrap(),
+            "/credentialSubject/single".parse().unwrap(),
             "/issuer".parse().unwrap(),
         ];
         let derived = base_vc
@@ -73,5 +80,11 @@ mod tests {
             });
 
         derived.verify(params).await.unwrap().unwrap();
+        println!(
+            "Dervired Verifiable Credential Subjects {:?}",
+            derived.credential_subjects().to_vec()
+        );
+
+        assert!(false);
     }
 }

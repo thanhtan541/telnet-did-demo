@@ -12,8 +12,8 @@ pub async fn index() -> Result<HttpResponse, actix_web::Error> {
 
 #[get("/qr")]
 pub async fn qr() -> Result<HttpResponse, actix_web::Error> {
-    let name = "John Doe";
-    let age = 30;
+    let name = "Alice";
+    let single = "yes";
     let is_verified = true; // Change to false to test not verified
 
     // Determine verification status HTML
@@ -78,13 +78,13 @@ pub async fn qr() -> Result<HttpResponse, actix_web::Error> {
         <body>
             <div class="profile-card">
                 <h2>{}</h2>
-                <p>Age: {}</p>
+                <p>Single: {}</p>
                 {}
             </div>
         </body>
         </html>
         "#,
-        name, age, verify_html
+        name, single, verify_html
     );
     // Return HTML response with correct content type
     Ok(HttpResponse::Ok()
