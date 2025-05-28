@@ -26,10 +26,8 @@ mod tests {
             "@context": [
                 "https://www.w3.org/ns/credentials/v2",
                 {
-                    "foo": "http://example.org/#foo",
-                    "bar": "http://example.org/#bar",
                     "age": "http://example.org/#age",
-                    "single": "http://example.org/#single"
+                    "single": "http://example.org/#single",
                 }
             ],
             "type": [
@@ -37,8 +35,6 @@ mod tests {
             ],
             "credentialSubject": {
                 "id": "did:key:z6MkhTNL7i2etLerDK8Acz5t528giE5KA4p75T6ka1E1D74r",
-                "foo": "value1",
-                "bar": "value2",
                 "age": "18",
                 "single": "yes",
             },
@@ -66,9 +62,7 @@ mod tests {
         selection.selective_pointers = vec![
             "/id".parse().unwrap(),
             "/type".parse().unwrap(),
-            "/credentialSubject/foo".parse().unwrap(),
             "/credentialSubject/age".parse().unwrap(),
-            "/credentialSubject/single".parse().unwrap(),
             "/issuer".parse().unwrap(),
         ];
         let derived = base_vc

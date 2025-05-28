@@ -1,0 +1,25 @@
+sequenceDiagram
+    participant H as Holder
+    participant I as Issuer
+    participant V as Verifier
+    participant R as Verifiable Data Registry
+
+    Note over I: VC includes selectively disclosable claims (e.g., name, email)
+    I-->>H: Send signed UserProfile VC
+
+    Note over H,V: Selective Disclosure during Verification
+    H->>H: Create Verifiable Presentation (VP) with selective disclosure
+    Note over H: Disclose only specific claims (e.g., name, not email)
+    H->>H: Sign VP with Holder's private key (authentication method)
+    H->>V: Send VP with selective disclosure
+    V->>R: Resolve Issuer DID to fetch DID Document
+    R-->>V: Return Issuer DID Document (with verification key)
+    V->>R: Resolve Holder DID to fetch DID Document
+    R-->>V: Return Holder DID Document (with authentication key)
+    V->>V: Verify VP signature using Holder's public key
+    V->>V: Verify disclosed VC claims using Issuer's public key
+    alt Signatures and claims are valid
+        V-->>H: Accept presentation
+    else Signatures or claims are invalid
+        V-->>H: Reject presentation
+    end

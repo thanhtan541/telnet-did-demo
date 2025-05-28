@@ -1,0 +1,24 @@
+sequenceDiagram
+    participant C as DID Controller
+    participant D as Delegate (Other DID Subject)
+    participant R as Verifiable Data Registry
+    participant A as Protected HTTP API
+
+    Note over C,D: Capability Delegation Process
+    C->>R: Resolve Controller's DID to fetch DID Document
+    R-->>C: Return DID Document (with capabilityDelegation key)
+    C->>C: Create capability delegation (signed with capabilityDelegation private key)
+    C-->>D: Send signed capability delegation
+
+    Note over D,A: Delegate Accesses Protected HTTP API
+    D->>R: Resolve Controller's DID to fetch DID Document
+    R-->>D: Return DID Document (with capabilityDelegation public key)
+    D->>A: Send capability delegation to access API
+    A->>R: Resolve Controller's DID to fetch DID Document
+    R-->>A: Return DID Document (with capabilityDelegation public key)
+    A->>A: Verify capability delegation signature
+    alt Signature is valid
+        A-->>D: Grant API access
+    else Signature is invalid
+        A-->>D: Deny API access
+    end

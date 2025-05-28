@@ -1,0 +1,29 @@
+sequenceDiagram
+    participant H as Holder (Mobile)
+    participant I as Issuer (AutoSecID)
+    participant V as Verifier (AutoSecID)
+    participant R as Verifiable Data Registry (DB)
+
+    Note over H,R: Initial AutoSecID DID
+    H->>H: Generate DID, KeyPair (signing_key, verifying_key)
+    H->>R: Submit DID, verifying_key (pub_key)
+    R->>R: Generate DID_doc
+    R->>H: Confirmed
+
+    Note over H,I: Initial AutoSecID Profile (VC)
+    H->>I: Provide email, DID
+    I->>R: Resolve Issuer DID to fetch DID Document
+    R-->>I: Return Issuer DID Document
+    I->>I: Create Profile VC (signed with Issuer's signing key)
+    I-->>H: Send signed Profile VC
+
+    Note over H,V: Later, during Holder login
+    H->>V: Present Profile VC
+    V->>R: Resolve Issuer DID to fetch DID_doc
+    R-->>V: Return Issuer DID_doc (with verification key)
+    V->>V: Verify VC signature using Issuer's public key
+    alt Signature is valid
+        V-->>H: Accept login
+    else Signature is invalid
+        V-->>H: Reject login
+    end
