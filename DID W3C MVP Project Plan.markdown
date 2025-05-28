@@ -126,15 +126,15 @@ The goal is to implement a Minimum Viable Product (MVP) for a Decentralized Iden
 - **Tools**: Golang, DIDKit, GitHub, local/cloud server.
 
 ## Risks and Mitigations
-- **Risk**: Library compatibility issues with `did:autosecid`.
+- **Risk**: Library compatibility issues with `did:some_org`.
   - **Mitigation**: Use well-tested libraries like `DIDKit`.
 - **Risk**: Scope creep beyond MVP.
-  - **Mitigation**: Strictly limit to `did:autosecid`, creation, and resolution.
+  - **Mitigation**: Strictly limit to `did:some_org`, creation, and resolution.
 - **Risk**: Insufficient testing.
   - **Mitigation**: Focus on core functionality tests and W3C compliance.
 
 ## Success Criteria
-- Functional MVP that creates and resolves `did:autosecid` DIDs.
+- Functional MVP that creates and resolves `did:some_org` DIDs.
 - Compliant with W3C DID Core Specification for syntax and DID documents.
 - Successful demo showing DID creation and resolution.
 - Basic documentation for developer use.
