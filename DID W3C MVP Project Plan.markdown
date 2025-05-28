@@ -1,7 +1,7 @@
 # Project Plan for DID W3C MVP Implementation
 
 ## Project Overview
-The goal is to implement a Minimum Viable Product (MVP) for a Decentralized Identifier (DID) system adhering to the W3C DID Core Specification (https://www.w3.org/TR/did-core/). The MVP will support creating and resolving DIDs using a single DID method (e.g., `did:autosecid`) and a simple verifiable data registry. The focus is on core functionality, basic security, and minimal setup to demonstrate viability.
+The goal is to implement a Minimum Viable Product (MVP) for a Decentralized Identifier (DID) system adhering to the W3C DID Core Specification (https://www.w3.org/TR/did-core/). The MVP will support creating and resolving DIDs using a single DID method (e.g., `did:some_org`) and a simple verifiable data registry. The focus is on core functionality, basic security, and minimal setup to demonstrate viability.
 
 ---
 
@@ -14,7 +14,7 @@ The goal is to implement a Minimum Viable Product (MVP) for a Decentralized Iden
    - Target a 3 use cases: `basic identity verification`, `selective disclosure`, `pseudonymous identity`.
 2. **Requirements Gathering**
    - Review W3C DID Core Specification for DID syntax and DID document requirements.
-   - Confirm `did:autosecid` method (public/private key pair-based DIDs).
+   - Confirm `did:some_org` method (public/private key pair-based DIDs).
    - Define minimal DID document structure (e.g., `id`, `publicKey`).
 3. **Technology Stack**
    - `Golang` for Backend, `IOs` for Mobile App.
@@ -38,13 +38,13 @@ The goal is to implement a Minimum Viable Product (MVP) for a Decentralized Iden
    - Create endpoints: `/create` (generate DID and document), `/resolve/{did}` (retrieve DID document).
    - Use RESTful API for simplicity.
 3. **Security Design**
-   - Use Ed25519 keys for `did:autosecid` (per W3C spec recommendation).
+   - Use Ed25519 keys for `did:some_org` (per W3C spec recommendation).
    - Ensure basic input validation and error handling.
 
 ### Deliverables
 - Simple architecture diagram.
 - API specification (e.g., OpenAPI YAML).
-- `did:autosecid` method outline.
+- `did:some_org` method outline.
 
 ---
 
@@ -75,7 +75,7 @@ The goal is to implement a Minimum Viable Product (MVP) for a Decentralized Iden
 
 ### Tasks
 1. **Functional Testing**
-   - Test DID creation (generates valid `did:autosecid` and DID document).
+   - Test DID creation (generates valid `did:some_org` and DID document).
    - Test DID resolution (returns correct DID document).
 2. **Compliance Testing**
    - Verify DID syntax and DID document structure against W3C spec.
