@@ -134,7 +134,7 @@ The goal is to implement a Minimum Viable Product (MVP) for a Decentralized Iden
   - **Mitigation**: Focus on core functionality tests and W3C compliance.
 
 ## Success Criteria
-- Functional MVP that creates and resolves `did:some_org` DIDs.
+- Functional MVP that creates and resolves `did:some_or` DIDs.
 - Compliant with W3C DID Core Specification for syntax and DID documents.
 - Successful demo showing DID creation and resolution.
 - Basic documentation for developer use.

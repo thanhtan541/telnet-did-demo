@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use secrecy::Secret;
 use serde_aux::field_attributes::deserialize_number_from_string;
 
@@ -16,7 +18,8 @@ pub struct ApplicationSettings {
 }
 
 pub fn get_configuration() -> Result<Settings, config::ConfigError> {
-    let base_path = std::env::current_dir().expect("Failed to determine the current directory");
+    let manifest_dir = env!("CARGO_MANIFEST_DIR");
+    let base_path = Path::new(manifest_dir);
     let configuration_directory = base_path.join("configuration");
 
     let environment: Enviroment = std::env::var("APP_ENVIRONMENT")
